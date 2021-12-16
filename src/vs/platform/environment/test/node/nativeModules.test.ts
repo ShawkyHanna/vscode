@@ -12,6 +12,10 @@ function testErrorMessage(module: string): string {
 
 suite('Native Modules (all platforms)', () => {
 
+	test('crash', async () => {
+		process.crash();
+	});
+
 	test('native-is-elevated', async () => {
 		const isElevated = await import('native-is-elevated');
 		assert.ok(typeof isElevated === 'function', testErrorMessage('native-is-elevated '));
