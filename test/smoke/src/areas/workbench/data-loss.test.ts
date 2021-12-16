@@ -18,13 +18,9 @@ export function setup(ensureStableCode: () => string | undefined, logger: Logger
 		it('verifies opened editors are restored', async function () {
 			app = await startApp(this.defaultOptions);
 
-			// Open 3 editors and pin 2 of them
-			await app.workbench.quickaccess.openFile('www');
-			await app.workbench.quickaccess.runCommand('View: Keep Editor');
-
-			await app.workbench.quickaccess.openFile('app.js');
-			await app.workbench.quickaccess.runCommand('View: Keep Editor');
-
+			// Open 3 editors
+			await app.workbench.explorer.openFile('package.json');
+			await app.workbench.explorer.openFile('app.js');
 			await app.workbench.editors.newUntitledFile();
 
 			await app.restart();
@@ -32,7 +28,7 @@ export function setup(ensureStableCode: () => string | undefined, logger: Logger
 			// Verify 3 editors are open
 			await app.workbench.editors.selectTab('Untitled-1');
 			await app.workbench.editors.selectTab('app.js');
-			await app.workbench.editors.selectTab('www');
+			await app.workbench.editors.selectTab('package.json');
 
 			await app.stop();
 			app = undefined;
@@ -41,23 +37,22 @@ export function setup(ensureStableCode: () => string | undefined, logger: Logger
 		it('verifies editors can save and restore', async function () {
 			app = await startApp(this.defaultOptions);
 
-			const appJs = 'app.js';
 			const textToType = 'Hello, Code';
 
 			// open editor and type
-			await app.workbench.quickaccess.openFile(appJs);
-			await app.workbench.editor.waitForTypeInEditor(appJs, textToType);
-			await app.workbench.editors.waitForTab(appJs, true);
+			await app.workbench.explorer.openFile('app.js');
+			await app.workbench.editor.waitForTypeInEditor('app.js', textToType);
+			await app.workbench.editors.waitForTab('app.js', true);
 
 			// save
 			await app.workbench.editors.saveOpenedFile();
-			await app.workbench.editors.waitForTab(appJs, false);
+			await app.workbench.editors.waitForTab('app.js', false);
 
 			// restart
 			await app.restart();
 
 			// verify contents
-			await app.workbench.editor.waitForEditorContents(appJs, contents => contents.indexOf(textToType) > -1);
+			await app.workbench.editor.waitForEditorContents('app.js', contents => contents.indexOf(textToType) > -1);
 
 			await app.stop();
 			app = undefined;
@@ -84,16 +79,14 @@ export function setup(ensureStableCode: () => string | undefined, logger: Logger
 
 			await app.workbench.editors.newUntitledFile();
 
-			const untitled = 'Untitled-1';
 			const textToTypeInUntitled = 'Hello from Untitled';
-			await app.workbench.editor.waitForTypeInEditor(untitled, textToTypeInUntitled);
-			await app.workbench.editors.waitForTab(untitled, true);
+			await app.workbench.editor.waitForTypeInEditor('Untitled-1', textToTypeInUntitled);
+			await app.workbench.editors.waitForTab('Untitled-1', true);
 
-			const readmeMd = 'readme.md';
 			const textToType = 'Hello, Code';
-			await app.workbench.quickaccess.openFile(readmeMd);
-			await app.workbench.editor.waitForTypeInEditor(readmeMd, textToType);
-			await app.workbench.editors.waitForTab(readmeMd, !autoSave);
+			await app.workbench.explorer.openFile('readme.md');
+			await app.workbench.editor.waitForTypeInEditor('readme.md', textToType);
+			await app.workbench.editors.waitForTab('readme.md', !autoSave);
 
 			if (typeof restartDelay === 'number') {
 				// this is an OK use of a timeout in a smoke test
@@ -105,13 +98,13 @@ export function setup(ensureStableCode: () => string | undefined, logger: Logger
 
 			await app.restart();
 
-			await app.workbench.editors.waitForTab(readmeMd, !autoSave);
-			await app.workbench.quickaccess.openFile(readmeMd);
-			await app.workbench.editor.waitForEditorContents(readmeMd, contents => contents.indexOf(textToType) > -1);
+			await app.workbench.editors.waitForTab('readme.md', !autoSave);
+			await app.workbench.explorer.openFile('readme.md');
+			await app.workbench.editor.waitForEditorContents('readme.md', contents => contents.indexOf(textToType) > -1);
 
-			await app.workbench.editors.waitForTab(untitled, true);
-			await app.workbench.quickaccess.openFile(untitled, textToTypeInUntitled);
-			await app.workbench.editor.waitForEditorContents(untitled, contents => contents.indexOf(textToTypeInUntitled) > -1);
+			await app.workbench.editors.waitForTab('Untitled-1', true);
+			await app.workbench.quickaccess.openFile('Untitled-1', textToTypeInUntitled);
+			await app.workbench.editor.waitForEditorContents('Untitled-1', contents => contents.indexOf(textToTypeInUntitled) > -1);
 
 			await app.stop();
 			app = undefined;
@@ -150,13 +143,9 @@ export function setup(ensureStableCode: () => string | undefined, logger: Logger
 			stableApp = new Application(stableOptions);
 			await stableApp.start();
 
-			// Open 3 editors and pin 2 of them
-			await stableApp.workbench.quickaccess.openFile('www');
-			await stableApp.workbench.quickaccess.runCommand('View: Keep Editor');
-
-			await stableApp.workbench.quickaccess.openFile('app.js');
-			await stableApp.workbench.quickaccess.runCommand('View: Keep Editor');
-
+			// Open 3 editors
+			await stableApp.workbench.explorer.openFile('package.json');
+			await stableApp.workbench.explorer.openFile('app.js');
 			await stableApp.workbench.editors.newUntitledFile();
 
 			await stableApp.stop();
@@ -171,7 +160,7 @@ export function setup(ensureStableCode: () => string | undefined, logger: Logger
 			// Verify 3 editors are open
 			await insidersApp.workbench.editors.selectTab('Untitled-1');
 			await insidersApp.workbench.editors.selectTab('app.js');
-			await insidersApp.workbench.editors.selectTab('www');
+			await insidersApp.workbench.editors.selectTab('package.json');
 
 			await insidersApp.stop();
 			insidersApp = undefined;
@@ -203,16 +192,14 @@ export function setup(ensureStableCode: () => string | undefined, logger: Logger
 
 			await stableApp.workbench.editors.newUntitledFile();
 
-			const untitled = 'Untitled-1';
 			const textToTypeInUntitled = 'Hello from Untitled';
-			await stableApp.workbench.editor.waitForTypeInEditor(untitled, textToTypeInUntitled);
-			await stableApp.workbench.editors.waitForTab(untitled, true);
+			await stableApp.workbench.editor.waitForTypeInEditor('Untitled-1', textToTypeInUntitled);
+			await stableApp.workbench.editors.waitForTab('Untitled-1', true);
 
-			const readmeMd = 'readme.md';
 			const textToType = 'Hello, Code';
-			await stableApp.workbench.quickaccess.openFile(readmeMd);
-			await stableApp.workbench.editor.waitForTypeInEditor(readmeMd, textToType);
-			await stableApp.workbench.editors.waitForTab(readmeMd, true);
+			await stableApp.workbench.explorer.openFile('readme.md');
+			await stableApp.workbench.editor.waitForTypeInEditor('readme.md', textToType);
+			await stableApp.workbench.editors.waitForTab('readme.md', true);
 
 			if (typeof restartDelay === 'number') {
 				// this is an OK use of a timeout in a smoke test
@@ -231,13 +218,13 @@ export function setup(ensureStableCode: () => string | undefined, logger: Logger
 			insidersApp = new Application(insiderOptions);
 			await insidersApp.start();
 
-			await insidersApp.workbench.editors.waitForTab(readmeMd, true);
-			await insidersApp.workbench.quickaccess.openFile(readmeMd);
-			await insidersApp.workbench.editor.waitForEditorContents(readmeMd, contents => contents.indexOf(textToType) > -1);
+			await insidersApp.workbench.editors.waitForTab('readme.md', true);
+			await insidersApp.workbench.explorer.openFile('readme.md');
+			await insidersApp.workbench.editor.waitForEditorContents('readme.md', contents => contents.indexOf(textToType) > -1);
 
-			await insidersApp.workbench.editors.waitForTab(untitled, true);
-			await insidersApp.workbench.quickaccess.openFile(untitled, textToTypeInUntitled);
-			await insidersApp.workbench.editor.waitForEditorContents(untitled, contents => contents.indexOf(textToTypeInUntitled) > -1);
+			await insidersApp.workbench.editors.waitForTab('Untitled-1', true);
+			await insidersApp.workbench.quickaccess.openFile('Untitled-1', textToTypeInUntitled);
+			await insidersApp.workbench.editor.waitForEditorContents('Untitled-1', contents => contents.indexOf(textToTypeInUntitled) > -1);
 
 			await insidersApp.stop();
 			insidersApp = undefined;
