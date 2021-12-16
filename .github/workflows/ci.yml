@@ -98,12 +98,16 @@ jobs:
         with:
           name: crash-dump-windows
           path: .build/crashes
+        if: failure()
+        continue-on-error: true
 
       - name: Publish Log Files
         uses: actions/upload-artifact@v2
         with:
           name: logs-windows
           path: .build/logs
+        if: failure()
+        continue-on-error: true
 
   linux:
     name: Linux
@@ -192,12 +196,16 @@ jobs:
         with:
           name: crash-dump-linux
           path: .build/crashes
+        if: failure()
+        continue-on-error: true
 
       - name: Publish Log Files
         uses: actions/upload-artifact@v2
         with:
           name: logs-linux
           path: .build/logs
+        if: failure()
+        continue-on-error: true
 
   darwin:
     name: macOS
@@ -278,12 +286,16 @@ jobs:
         with:
           name: crash-dump-macos
           path: .build/crashes
+        if: failure()
+        continue-on-error: true
 
       - name: Publish Log Files
         uses: actions/upload-artifact@v2
         with:
           name: logs-macos
           path: .build/logs
+        if: failure()
+        continue-on-error: true
 
   hygiene:
     name: Hygiene, Layering and Monaco Editor
