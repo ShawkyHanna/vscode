@@ -92,6 +92,18 @@ jobs:
         timeout-minutes: 10
         run: .\resources\server\test\test-remote-integration.bat
 
+      - name: Publish Crash Reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: crash-dump-windows
+          path: .build/crashes
+
+      - name: Publish Log Files
+        uses: actions/upload-artifact@v2
+        with:
+          name: logs-windows
+          path: .build/logs
+
   linux:
     name: Linux
     runs-on: ubuntu-latest
@@ -174,6 +186,18 @@ jobs:
         timeout-minutes: 7
         run: DISPLAY=:10 ./resources/server/test/test-remote-integration.sh
 
+      - name: Publish Crash Reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: crash-dump-linux
+          path: .build/crashes
+
+      - name: Publish Log Files
+        uses: actions/upload-artifact@v2
+        with:
+          name: logs-linux
+          path: .build/logs
+
   darwin:
     name: macOS
     runs-on: macos-latest
@@ -247,6 +271,18 @@ jobs:
       - name: Run Integration Tests (Remote)
         timeout-minutes: 7
         run: DISPLAY=:10 ./resources/server/test/test-remote-integration.sh
+
+      - name: Publish Crash Reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: crash-dump-macos
+          path: .build/crashes
+
+      - name: Publish Log Files
+        uses: actions/upload-artifact@v2
+        with:
+          name: logs-macos
+          path: .build/logs
 
   hygiene:
     name: Hygiene, Layering and Monaco Editor
